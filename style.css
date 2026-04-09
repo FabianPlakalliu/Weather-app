@@ -11,7 +11,6 @@ body {
   min-height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
   padding: 30px 15px;
 }
 
@@ -22,7 +21,7 @@ body {
 }
 
 h1 {
-  font-size: 36px;
+  font-size: 34px;
   margin-bottom: 10px;
 }
 
@@ -43,15 +42,13 @@ h1 {
   border-radius: 10px;
   border: none;
   outline: none;
-  font-size: 14px;
 }
 
 .search-box button {
-  padding: 12px 16px;
-  border: none;
+  padding: 12px;
   border-radius: 10px;
+  border: none;
   background: #38bdf8;
-  color: black;
   font-weight: bold;
   cursor: pointer;
   transition: 0.2s;
@@ -61,110 +58,101 @@ h1 {
   background: #0ea5e9;
 }
 
-#suggestions {
-  background: #1e293b;
-  border-radius: 10px;
-  margin-bottom: 10px;
-  overflow: hidden;
-}
-
-#suggestions div {
-  padding: 10px;
-  cursor: pointer;
-  text-align: left;
-}
-
-#suggestions div:hover {
-  background: #334155;
-}
-
-.loading-message {
-  color: #38bdf8;
-  min-height: 20px;
-  margin-bottom: 6px;
-  font-size: 14px;
-}
-
-.error-message {
-  color: #f87171;
-  min-height: 20px;
-  margin-bottom: 10px;
-  font-size: 14px;
-}
-
 .weather-card {
   background: #1e293b;
-  padding: 24px;
+  padding: 25px;
   border-radius: 16px;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+  margin-top: 15px;
 }
 
 .weather-icon {
   width: 90px;
-  height: 90px;
   margin-bottom: 10px;
 }
 
 .weather-card h2 {
-  font-size: 28px;
-  margin-bottom: 12px;
+  font-size: 26px;
 }
 
 .weather-card p {
-  margin: 8px 0;
-  font-size: 18px;
+  margin: 6px 0;
 }
 
 .forecast-section {
-  margin-top: 22px;
-  text-align: left;
+  margin-top: 25px;
+  text-align: center;
 }
 
 .forecast-section h3 {
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .forecast {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 5px 0 10px;
+  scroll-behavior: smooth;
+}
+
+.forecast::-webkit-scrollbar {
+  height: 6px;
+}
+
+.forecast::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 10px;
+}
+
+.forecast::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .day {
   background: #1e293b;
-  padding: 12px 8px;
+  padding: 14px 12px;
   border-radius: 12px;
+  min-width: 110px;
+  flex: 0 0 auto;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .day-name {
   font-size: 14px;
+  font-weight: bold;
   color: #cbd5e1;
   margin-bottom: 8px;
-  font-weight: bold;
+  display: block;
 }
 
 .day img {
   width: 50px;
   height: 50px;
+  object-fit: contain;
 }
 
 .day-temp {
-  font-size: 15px;
-  margin-top: 6px;
+  margin-top: 8px;
+  font-size: 16px;
+  font-weight: bold;
 }
 
 .recent {
-  margin-top: 24px;
-  text-align: left;
+  margin-top: 25px;
+  text-align: center;
 }
 
 .recent h3 {
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 #recentList {
   display: flex;
+  justify-content: center;
   flex-wrap: wrap;
   gap: 8px;
 }
@@ -174,30 +162,25 @@ h1 {
   padding: 8px 12px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
 }
 
 #recentList span:hover {
   background: #475569;
 }
 
+.loading-message {
+  color: #38bdf8;
+  min-height: 20px;
+  margin-top: 10px;
+}
+
+.error-message {
+  color: #f87171;
+  min-height: 20px;
+  margin-top: 10px;
+}
+
 @media (max-width: 768px) {
-  body {
-    padding: 20px 12px;
-  }
-
-  .container {
-    max-width: 100%;
-  }
-
-  h1 {
-    font-size: 30px;
-  }
-
-  .subtitle {
-    font-size: 14px;
-  }
-
   .search-box {
     flex-direction: column;
   }
@@ -207,43 +190,34 @@ h1 {
     width: 100%;
   }
 
-  .weather-card {
-    padding: 20px;
-  }
-
-  .weather-card h2 {
-    font-size: 24px;
-  }
-
-  .weather-card p {
-    font-size: 16px;
-  }
-
   .forecast {
-    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .day {
+    min-width: 95px;
+    padding: 12px 10px;
   }
 }
 
 @media (max-width: 480px) {
-  .forecast {
-    grid-template-columns: 1fr;
+  h1 {
+    font-size: 26px;
+  }
+
+  .weather-card h2 {
+    font-size: 22px;
   }
 
   .day {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    text-align: left;
-    padding: 12px 14px;
+    min-width: 90px;
   }
 
-  .day img {
-    width: 42px;
-    height: 42px;
+  .day-name {
+    font-size: 13px;
   }
 
-  .day-name,
   .day-temp {
-    margin: 0;
+    font-size: 15px;
   }
 }

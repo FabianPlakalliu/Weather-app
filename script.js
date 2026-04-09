@@ -59,7 +59,15 @@ cityInput.addEventListener("keypress", function (event) {
 });
 
 function getDayName(dateString) {
-  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+  ];
   const date = new Date(dateString);
   return days[date.getDay()];
 }
