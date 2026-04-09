@@ -2,124 +2,167 @@ const apiKey = "2e40db2f09911bea105009e2bff165b6";
 
 let recentCities = [];
 
-// Greek to English
 const greekMap = {
   "αθήνα": "Athens",
-  "θεσσαλονίκη": "Thessaloniki"
+  "θεσσαλονίκη": "Thessaloniki",
+  "πάτρα": "Patras",
+  "ηράκλειο": "Heraklion",
+  "λάρισα": "Larissa",
+  "βόλος": "Volos"
 };
 
-// suggestions
-const cities = ["Athens","Thessaloniki","London","Paris","Berlin","Rome"];
+const cities = [
+  "Athens",
+  "Thessaloniki",
+  "Patras",
+  "Heraklion",
+  "Larissa",
+  "Volos",
+  "London",
+  "Paris",
+  "Berlin",
+  "Rome"
+];
 
-document.getElementById("cityInput").addEventListener("input", function(){
-  const val = this.value.toLowerCase();
-  const sug = document.getElementById("suggestions");
-  sug.innerHTML = "";
+const cityInput = document.getElementById("cityInput");
+const suggestions = document.getElementById("suggestions");
+const loadingMessage = document.getElementById("loadingMessage");
+const errorMessage = document.getElementById("errorMessage");
 
-  if(!val) return;
+cityInput.addEventListener("input", function () {
+  const val = this.value.toLowerCase().trim();
+  suggestions.innerHTML = "";
+
+  if (!val) return;
 
   cities
-    .filter(c => c.toLowerCase().startsWith(val))
-    .forEach(c=>{
+    .filter(city => city.toLowerCase().startsWith(val))
+    .slice(0, 5)
+    .forEach(city => {
       const div = document.createElement("div");
-      div.textContent = c;
+      div.textContent = city;
 
-      div.onclick = ()=>{
-        document.getElementById("cityInput").value = c;
-        sug.innerHTML="";
+      div.onclick = () => {
+        cityInput.value = city;
+        suggestions.innerHTML = "";
         getWeather();
       };
 
-      sug.appendChild(div);
+      suggestions.appendChild(div);
     });
 });
 
-// enter key
-document.getElementById("cityInput").addEventListener("keypress", e=>{
-  if(e.key==="Enter") getWeather();
+cityInput.addEventListener("keypress", function (event) {
+  if (event.key === "Enter") {
+    getWeather();
+  }
 });
 
-async function getWeather(){
+function getDayName(dateString) {
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const date = new Date(dateString);
+  return days[date.getDay()];
+}
 
-  let city = document.getElementById("cityInput").value.trim().toLowerCase();
+async function getWeather() {
+  let city = cityInput.value.trim();
+  const cityLower = city.toLowerCase();
 
-  // Greek support
-  if(greekMap[city]) city = greekMap[city];
+  if (greekMap[cityLower]) {
+    city = greekMap[cityLower];
+  }
 
-  document.getElementById("loadingMessage").textContent="Loading...";
-  document.getElementById("errorMessage").textContent="";
+  loadingMessage.textContent = "Loading...";
+  errorMessage.textContent = "";
+  suggestions.innerHTML = "";
 
-  try{
+  if (!city) {
+    loadingMessage.textContent = "";
+    errorMessage.textContent = "Please enter a city name.";
+    return;
+  }
 
-    const res = await fetch(
+  try {
+    const currentResponse = await fetch(
       `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`
     );
+    const currentData = await currentResponse.json();
 
-    const data = await res.json();
-
-    if(data.cod !== 200){
-      document.getElementById("errorMessage").textContent="City not found";
+    if (currentData.cod !== 200) {
+      loadingMessage.textContent = "";
+      errorMessage.textContent = "City not found.";
       return;
     }
 
-    // main info
-    document.getElementById("cityName").textContent=data.name;
-    document.getElementById("temperature").textContent=data.main.temp+"°C";
-    document.getElementById("description").textContent=data.weather[0].description;
-    document.getElementById("humidity").textContent="Humidity: "+data.main.humidity+"%";
-    document.getElementById("wind").textContent="Wind: "+data.wind.speed+" km/h";
+    document.getElementById("cityName").textContent = currentData.name;
+    document.getElementById("temperature").textContent = `${Math.round(currentData.main.temp)}°C`;
+    document.getElementById("description").textContent = currentData.weather[0].description;
+    document.getElementById("humidity").textContent = `Humidity: ${currentData.main.humidity}%`;
+    document.getElementById("wind").textContent = `Wind: ${currentData.wind.speed} km/h`;
 
-    const icon=data.weather[0].icon;
-    document.getElementById("weatherIcon").src=
-      `https://openweathermap.org/img/wn/${icon}@2x.png`;
+    const iconCode = currentData.weather[0].icon;
+    const weatherIcon = document.getElementById("weatherIcon");
+    weatherIcon.src = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+    weatherIcon.alt = currentData.weather[0].description;
 
-    // recent
-    if(!recentCities.includes(city)){
-      recentCities.unshift(city);
-      if(recentCities.length>5) recentCities.pop();
+    const savedCity = currentData.name;
+    if (!recentCities.includes(savedCity)) {
+      recentCities.unshift(savedCity);
+
+      if (recentCities.length > 5) {
+        recentCities.pop();
+      }
+
       updateRecent();
     }
 
-    // forecast
-    const res2 = await fetch(
-      `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&appid=${apiKey}`
+    const forecastResponse = await fetch(
+      `https://api.openweathermap.org/data/2.5/forecast?q=${savedCity}&units=metric&appid=${apiKey}`
     );
+    const forecastData = await forecastResponse.json();
 
-    const forecastData = await res2.json();
+    const forecastContainer = document.getElementById("forecast");
+    forecastContainer.innerHTML = "";
 
-    const container = document.getElementById("forecast");
-    container.innerHTML="";
+    const dailyForecasts = [];
 
-    forecastData.list.slice(0,7).forEach(day=>{
-      const div = document.createElement("div");
-      div.className="day";
-
-      div.innerHTML=`
-        <p>${day.main.temp}°C</p>
-        <img src="https://openweathermap.org/img/wn/${day.weather[0].icon}.png">
-      `;
-
-      container.appendChild(div);
+    forecastData.list.forEach(item => {
+      if (item.dt_txt.includes("12:00:00")) {
+        dailyForecasts.push(item);
+      }
     });
 
-  }catch(err){
-    document.getElementById("errorMessage").textContent="Error loading data";
-  }
+    dailyForecasts.slice(0, 5).forEach(day => {
+      const div = document.createElement("div");
+      div.className = "day";
 
-  document.getElementById("loadingMessage").textContent="";
+      div.innerHTML = `
+        <div class="day-name">${getDayName(day.dt_txt)}</div>
+        <img src="https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png" alt="${day.weather[0].description}">
+        <div class="day-temp">${Math.round(day.main.temp)}°C</div>
+      `;
+
+      forecastContainer.appendChild(div);
+    });
+
+    loadingMessage.textContent = "";
+  } catch (error) {
+    console.error(error);
+    loadingMessage.textContent = "";
+    errorMessage.textContent = "Something went wrong.";
+  }
 }
 
-// recent UI
-function updateRecent(){
-  const container=document.getElementById("recentList");
-  container.innerHTML="";
+function updateRecent() {
+  const container = document.getElementById("recentList");
+  container.innerHTML = "";
 
-  recentCities.forEach(c=>{
-    const span=document.createElement("span");
-    span.textContent=c;
+  recentCities.forEach(city => {
+    const span = document.createElement("span");
+    span.textContent = city;
 
-    span.onclick=()=>{
-      document.getElementById("cityInput").value=c;
+    span.onclick = () => {
+      cityInput.value = city;
       getWeather();
     };
 

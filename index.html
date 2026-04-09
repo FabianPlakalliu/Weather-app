@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title> Weather Dashboard</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Weather Dashboard</title>
   <link rel="icon" type="image/png" href="weather.png">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="container">
 
-  <h1>🌦 Weather Dashboard</h1>
-  <p class="subtitle">Search for a city</p>
+  <h1>Weather Dashboard</h1>
+  <p class="subtitle">Search for a city and view weather details</p>
 
   <div class="search-box">
     <input type="text" id="cityInput" placeholder="Enter city..." autocomplete="off">
@@ -21,19 +21,22 @@
 
   <div id="suggestions"></div>
 
-  <p id="loadingMessage"></p>
-  <p id="errorMessage"></p>
+  <p id="loadingMessage" class="loading-message"></p>
+  <p id="errorMessage" class="error-message"></p>
 
   <div class="weather-card">
-    <img id="weatherIcon">
+    <img id="weatherIcon" src="" alt="Weather Icon" class="weather-icon">
     <h2 id="cityName">City</h2>
     <p id="temperature">--°C</p>
     <p id="description">--</p>
-    <p id="humidity">--</p>
-    <p id="wind">--</p>
+    <p id="humidity">Humidity: --%</p>
+    <p id="wind">Wind: -- km/h</p>
   </div>
 
-  <div class="forecast" id="forecast"></div>
+  <div class="forecast-section">
+    <h3>Weekly Forecast</h3>
+    <div class="forecast" id="forecast"></div>
+  </div>
 
   <div class="recent">
     <h3>Recent Searches</h3>
